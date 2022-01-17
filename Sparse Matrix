@@ -1,137 +1,229 @@
-#include<stdio.h>
-int main()
+#include <stdio.h>
+void accept_display(int a[20][20],int m,int n);
+void triplet(int a[20][20],int t[20][3],int m,int n);
+void fast_transpose(int t[20][3],int ft[20][3]);
+void accept_display(int a[20][20],int m,int n)
 {
-  int a[10][3],b[10][3],c[10][3],r1,c1,v1,r2,c2,v2,k=1;
-  int choice;
-  int count=0;
-  printf("Menu\n1)addition of two matrix\n2)transpose of matrix\nenter your choice:");
-  scanf("%d",&choice);
-
-  switch(choice)
-  {
-    case 1:
-printf("enter no of rows,columns and values of matrix 1\n");
-  scanf("%d%d%d",&r1,&c1,&v1);
-  a[0][0]=r1;
-  a[0][1]=c1;
-  a[0][2]=v1;
-  printf("----MATRIX_1----\n");
-  printf("ROW\tCOLUMN\tVALUE\n");
-
-  for(int i=1;i<=v1;i++)
-  {
-    scanf("%d%d%d",&a[i][0],&a[i][1],&a[i][2]);
-
-  }
-
-  
-
-printf("enter no of rows ,columns and values of matrix 2\n");
-  scanf("%d%d%d",&r2,&c2,&v2);
-  b[0][0]=r2;
-  b[0][1]=c2;
-  b[0][2]=v2;
- printf("----MATRIX_2----\n");
-  printf("ROW\tCOLUMN\tVALUE\n");
-
-  for(int i=1;i<=v2;i++)
-  {
-scanf("%d%d%d",&b[i][0],&b[i][1],&b[i][2]);
-
-  }
-
-
-
-if(r1!=r2 || c1!=c2)
-  {
-  printf("addition is not possible");
-  }
+for(int i=0;i<m;i++)
+{
+for(int j=0;j<n;j++)
+{
+printf("Enter value for a[%d][%d]:", i, j);
+scanf("%d", &a[i][j]);
+}
+}
+printf("\n");
+printf("The given sparse matrix is:\n");
+for(int i=0;i<m;i++)
+{
+for(int j=0;j<n;j++)
+{
+printf("\t%d", a[i][j]);
+}
+printf("\n");
+}
+}
+void triplet(int a[20][20],int t[20][3],int m,int n)
+{
+int k=1;
+t[0][0]=m;
+t[0][1]=n;
+for(int i=0;i<m;i++)
+{
+for(int j=0;j<n;j++)
+{
+if(a[i][j]!=0)
+{
+t[k][0]=i;
+t[k][1]=j;
+t[k][2]=a[i][j];
+k++;
+}
+}
+}
+k--;
+t[0][2]=k;
+}
+void display_triplet(int t[20][3])
+{
+printf("\n");
+printf("The triplet form of given sparse matrix is:\n");
+for(int i=0;i<t[0][2]+1;i++)
+{
+for(int j=0;j<3;j++)
+{
+printf("\t%d", t[i][j]);
+}
+printf("\n");
+}
+}
+void fast_transpose(int t[20][3],int ft[20][3])
+{
+ft[0][0]=t[0][1];
+ft[0][1]=t[0][0];
+ft[0][2]=t[0][2];
+int count[20]={},index[20];
+int ctr;
+int k=0;
+for(int i=1;i<=t[0][1];i++)
+{
+count[t[i][1]]+=1;
+}
+index[0]=1;
+for(int i=1;i<t[0][1];i++)
+{
+index[i]=index[i-1]+count[i-1];
+}
+for(int i=1;i<=t[0][2];i++)
+{
+int temp;
+int position;
+temp=t[i][1];
+position=index[temp];
+ft[position][0]=t[i][1];
+ft[position][1]=t[i][0];
+ft[position][2]=t[i][2];
+index[temp]+=1;
+}
+printf("The Fast transpose of given sparse matrix is:\n");
+for(int i=0;i<=t[0][2];i++)
+{
+for(int j=0;j<3;j++)
+{
+printf("\t%d", ft[i][j]);
+}
+printf("\n");
+}
+}
+void addition()
+{
+int a[20][20],b[20][20];
+int t1[20][3],t2[20][3],result[20][3];
+int r,c;
+printf("Enter no of rows and columns for both matrices ");
+scanf("%d%d",&r,&c);
+printf("\nEnter elements for matrix 1 :\n");
+accept_display(a,r,c);
+printf("\nEnter elements for matrix 2 :\n");
+accept_display(b,r,c);
+triplet( a,t1,r,c);
+triplet( b,t2,r,c);
+int tot1,tot2,i=1,j=1,k=1;
+tot1=t1[0][2];
+tot2=t2[0][2];
+result[0][0]=r;
+result[0][1]=c;
+while(i<=tot1 && j<=tot2)
+{
+if(t1[i][0]==t2[j][0])
+{
+if(t1[i][1]==t2[j][1])
+{
+result[k][0]=t1[i][0];
+result[k][1]=t1[i][1];
+result[k][2]=t1[i][2]+t2[j][2];
+i++;j++;k++;
+}
 else
-  {
-  for(int i=1,j=1;i<=v1||j<=v2;)
-  { count++;
-  if(a[i][0]>b[j][0])
-  {
-    c[k][0]=b[j][0];
-    c[k][1]=b[j][1];
-    c[k][2]=b[j][2];
-    j++,k++;
-  }
-  else if(a[i][0]<b[j][0])
-   {
-    c[k][0]=a[i][0]; 
-    c[k][1]=a[i][1];
-    c[k][2]=a[i][2];
-    i++,k++;
-   }
-   else if(a[i][1]>b[j][1])
-   {
-    c[k][0]=b[j][0];
-    c[k][1]=b[j][1];
-    c[k][2]=b[j][2];
-   j++,k++;
-   }
-   else if(a[i][1]<b[j][1])
-   {
-    c[k][0]=a[i][0]; 
-    c[k][1]=a[i][1];
-    c[k][2]=a[i][2];
-    i++,k++;
-   }
-  else
-  {
-   c[k][0]=a[i][0];
-   c[k][1]=a[i][1];
-   c[k][2]=a[i][2]+b[j][2];
-   i++,j++,k++;
-  }
-}
-}
-
-printf("sum of 2 sparse matrix is :\n");
-printf("ROW\tCOLUMN\tVALUE\n");
-for(int i=0;i<k;i++)
 {
-printf("%d\t\t%d\t\t%d\n",c[i][0],c[i][1],c[i][2]);
+if(t1[i][1]>t2[j][1])
+{
+result[k][0]=t2[j][0];
+result[k][1]=t2[j][2];
+result[k][2]=t2[j][2];
+j++;k++;
 }
+else
+{
+if(t1[i][1]<t2[j][1])
+{
+result[k][0]=t1[j][0];
+result[k][1]=t1[j][2];
+result[k][2]=t1[j][2];
+i++;k++;
+}
+}
+}
+}
+else
+{
+if(t1[i][0]>t2[j][0])
+{
+result[k][0]=t2[j][0];
+result[k][1]=t2[j][2];
+result[k][2]=t2[j][2];
+j++;k++;
+}
+else
+{
+if(t1[i][0 ]<t2[j][0])
+{
+result[k][0]=t1[j][0];
+result[k][1]=t1[j][2];
+result[k][2]=t1[j][2];
+i++;k++;
+}
+}
+}
+}
+while(j<=tot1 && i>=tot1)
+{
+result[k][0]=t2[j][0];
+result[k][1]=t2[j][2];
+result[k][2]=t2[j][2];
+j++;k++;
+}
+while(j>=tot2 && i<=tot1)
+{
+result[k][0]=t1[j][0];
+result[k][1]=t1[j][2];
+result[k][2]=t1[j][2];
+i++;k++;
+}
+result[0][2]=k-1;
+printf("\nAddition");
+display_triplet(result);
+}
+int main(void) {
+int arr[20][20];
+int t[20][3];
+int ft[20][3];
+int choice;
+int m;
+int n;
+printf("Enter number of rows: ");
+scanf("%d",&m);
+printf("Enter number of columns: ");
+scanf("%d",&n);
+do{
+printf("\n1. Accept the sparse matrix and display it\n");
+printf("2. Convert sparse matrix into triplet form\n");
+printf("3. Display triplet form");
+printf("\n4. Perform fast transpose");
+printf("\n5. Addition");
+printf("\n6. Exit");
+printf("\nEnter your choice: ");
+scanf("%d",&choice);
+switch(choice)
+{
+case 1:
+accept_display(arr,m,n);
+break;
 case 2:
-
-printf("enter no of rows,columns and values of matrix 1\n");
-  scanf("%d%d%d",&r1,&c1,&v1);
-  a[0][0]=r1;
-  a[0][1]=c1;
-  a[0][2]=v1;
-  printf("----MATRIX_1----\n");
-  printf("ROW\tCOLUMN\tVALUE\n");
-
-  for(int i=1;i<=v1;i++)
-  {
-    scanf("%d%d%d",&a[i][0],&a[i][1],&a[i][2]);
-
-  }
-
-b[0][0]=c1;
-b[0][1]=r1;
-b[0][2]=v1;
-for(int i=0;i<c1;i++)
-{
-  for(int j=0;j<=v1;j++)
-  {
-
-    if(i==a[j][1])
-    {b[k][0]=i;
-    b[k][1]=a[j][0];
-    b[k][2]=a[j][2];
-      k++;
-    }
-  }
+triplet(arr,t,m,n);
+break;
+case 3:
+display_triplet(t);
+break;
+case 4:
+fast_transpose(t,ft);
+break;
+case 5:
+addition();
+break;
+case 6:
+break;
 }
-printf("transpose matrix:\n");
-printf("ROW\tCOLUMN\tVALUE\n");
-for(int i=1;i<=v1;i++)
-{
-  printf("%d\t%d\t%d\t\n",b[i][0],b[i][1],b[i][2]);
-}
-  }
-
+}while(choice!=6);
+return 0;
 }
